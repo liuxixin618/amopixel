@@ -13,11 +13,11 @@ export async function renderDownload(mount, params) {
 
   let data;
   try {
-    data = await loadJSON("amopixel/data/games.json");
+    data = await loadJSON("/amopixel/data/games.json");
   } catch (e) {
     mount.innerHTML = `<section class="page page-error">
       <h1>无法加载</h1><p>${esc(e.message)}</p>
-      <a class="btn btn-primary" href="amopixel/games">返回游戏页</a>
+      <a class="btn btn-primary" href="/amopixel/games">返回游戏页</a>
     </section>`;
     return;
   }
@@ -28,7 +28,7 @@ export async function renderDownload(mount, params) {
     mount.innerHTML = `<section class="page page-error">
       <h1>未找到该游戏</h1>
       <p>ID：${esc(gameId)}</p>
-      <a class="btn btn-primary" href="amopixel/games">返回游戏页</a>
+      <a class="btn btn-primary" href="/amopixel/games">返回游戏页</a>
     </section>`;
     return;
   }
@@ -40,7 +40,7 @@ export async function renderDownload(mount, params) {
 
   // 返回按钮带上 gameId，点击回到游戏页时保留选中
   const backBtn = root.querySelector("[data-back]");
-  backBtn.setAttribute("href", `amopixel/games/${encodeURIComponent(game.id)}`);
+  backBtn.setAttribute("href", `/amopixel/games/${encodeURIComponent(game.id)}`);
 
   const icon = root.querySelector("[data-icon]");
   icon.src = game.icon;

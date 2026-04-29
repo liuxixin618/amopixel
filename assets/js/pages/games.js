@@ -20,7 +20,7 @@ export async function renderGames(mount, params = {}) {
 
   let data;
   try {
-    data = await loadJSON("amopixel/data/games.json");
+    data = await loadJSON("/amopixel/data/games.json");
   } catch (e) {
     mount.innerHTML = `<section class="page page-error">
       <h1>无法加载游戏列表</h1>
@@ -118,7 +118,7 @@ export async function renderGames(mount, params = {}) {
 
     if (updateUrl) {
       // 仅同步地址栏，不触发 popstate 重新渲染
-      replace(`amopixel/games/${encodeURIComponent(id)}`);
+      replace(`/amopixel/games/${encodeURIComponent(id)}`);
     }
   }
 }
@@ -151,7 +151,7 @@ function renderDetail(detail, game) {
 
   descEl.textContent = game.description || "";
 
-  dlBtn.setAttribute("href", `amopixel/download/${encodeURIComponent(game.id)}`);
+  dlBtn.setAttribute("href", `/amopixel/download/${encodeURIComponent(game.id)}`);
 
   // Banner
   stage.innerHTML = "";

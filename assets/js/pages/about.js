@@ -12,7 +12,7 @@ export async function renderAbout(mount) {
 
   let cfg;
   try {
-    cfg = await loadJSON("amopixel/data/about.json");
+    cfg = await loadJSON("/amopixel/data/about.json");
   } catch (e) {
     mount.innerHTML = `<section class="page page-error">
       <h1>无法加载</h1><p>${esc(e.message)}</p>

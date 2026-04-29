@@ -14,7 +14,7 @@ export async function renderHome(mount) {
 
   let cfg = null;
   try {
-    cfg = await loadJSON("amopixel/data/home.json");
+    cfg = await loadJSON("/amopixel/data/home.json");
   } catch {
     /* 静默 */
   }
