@@ -5,11 +5,11 @@
       "dir": "PixelGarden",
       "title": "Pixel Garden",
       "description": "在像素世界里经营一座小花园。\n\n种下种子，浇水，等到第二天发芽——一款不需要赢的、慢节奏放松小品。",
-      "icon": "/amopixel/Games/PixelGarden/icon.svg",
+      "icon": "Games/PixelGarden/icon.svg",
       "banners": [
-        "/amopixel/Games/PixelGarden/Banners/01.svg",
-        "/amopixel/Games/PixelGarden/Banners/02.svg",
-        "/amopixel/Games/PixelGarden/Banners/03.svg"
+        "Games/PixelGarden/Banners/01.svg",
+        "Games/PixelGarden/Banners/02.svg",
+        "Games/PixelGarden/Banners/03.svg"
       ],
       "downloads": [
         {
@@ -36,10 +36,10 @@
       "dir": "Lumen",
       "title": "Lumen",
       "description": "用一束光，画出整个世界的形状。\n\n一款关于光线折射、镜面反射与几何谜题的极简解谜游戏。",
-      "icon": "/amopixel/Games/Lumen/icon.svg",
+      "icon": "Games/Lumen/icon.svg",
       "banners": [
-        "/amopixel/Games/Lumen/Banners/01.svg",
-        "/amopixel/Games/Lumen/Banners/02.svg"
+        "Games/Lumen/Banners/01.svg",
+        "Games/Lumen/Banners/02.svg"
       ],
       "downloads": [
         {
@@ -62,9 +62,9 @@
       "dir": "StarpostExpress",
       "title": "Starpost Express",
       "description": "驾驶你的小货车，把信件和包裹送遍 50 个奇怪又温柔的星球。\n\n每一次出发，都是一段新的故事。",
-      "icon": "/amopixel/Games/StarpostExpress/icon.svg",
+      "icon": "Games/StarpostExpress/icon.svg",
       "banners": [
-        "/amopixel/Games/StarpostExpress/Banners/01.svg"
+        "Games/StarpostExpress/Banners/01.svg"
       ],
       "downloads": [
         {

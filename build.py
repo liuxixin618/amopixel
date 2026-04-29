@@ -118,8 +118,9 @@ def _find_icon(game_dir: Path) -> str | None:
     for name in ICON_NAMES:
         p = game_dir / name
         if p.exists():
-            # 用绝对路径，让前端在任意 history 路由下都能正确加载
-            return f"/Games/{game_dir.name}/{p.name}"
+            # 用相对路径（不带前导 /），由 <base href> 在前端自动补全 BASE 前缀，
+            # 这样同一份数据可以无修改部署到根路径或 /amopixel/ 子路径
+            return f"Games/{game_dir.name}/{p.name}"
     return None
 
 
@@ -133,7 +134,7 @@ def _find_banners(game_dir: Path) -> list[str]:
         if p.is_file() and p.suffix.lower() in BANNER_EXTS
     ]
     files.sort(key=lambda p: _natural_key(p.name))
-    return [f"/Games/{game_dir.name}/Banners/{p.name}" for p in files]
+    return [f"Games/{game_dir.name}/Banners/{p.name}" for p in files]
 
 
 def _load_game(game_dir: Path) -> dict[str, Any]:

@@ -1,7 +1,7 @@
 /**
- * 极简 History API 路由（无 # 号）。
+ * 极简 History API 路由（无 # 号），支持 BASE 子路径部署。
  *
- * 路由表：
+ * 路由表（"逻辑路径"，即 BASE 之外的部分）：
  *   /                       → home
  *   /games                  → games（默认选第一个）
  *   /games/<gameId>         → games（指定游戏选中）
@@ -10,10 +10,12 @@
  *
  * GitHub Pages 配套：
  *   - 直接访问 /games 这种"伪"路径时 GitHub Pages 会返回 404.html
- *   - 404.html 把当前路径暂存到 sessionStorage 然后跳到 /
+ *   - 404.html 把当前路径暂存到 sessionStorage 然后跳到 BASE 根
  *   - index.html 启动时检测并 history.replaceState 恢复路径
  *   该恢复逻辑在 index.html 的内联 <script> 中执行（在本模块加载之前）。
  */
+
+import { withBase, stripBase } from "./base.js";
 
 /** @typedef {{ name: string, params: Record<string,string> }} Route */
 
@@ -26,11 +28,11 @@ const routes = [
 ];
 
 /**
- * 解析当前 URL 为路由。
+ * 解析当前 URL 为路由（自动剥离 BASE 前缀）。
  * @returns {Route}
  */
 export function parseLocation() {
-  const path = decodePath(location.pathname || "/");
+  const path = decodePath(stripBase(location.pathname || "/"));
   for (const r of routes) {
     const m = path.match(r.pattern);
     if (m) {
@@ -42,10 +44,6 @@ export function parseLocation() {
   return { name: "notfound", params: {} };
 }
 
-/**
- * 把 path 中的每段单独解码（保留 / 分隔符），让目录里有空格 / 中文也能匹配模式。
- * @param {string} p
- */
 function decodePath(p) {
   try {
     return p
@@ -58,35 +56,34 @@ function decodePath(p) {
 }
 
 /**
- * 跳转到给定路径（带历史记录）。
- * @param {string} path
+ * 跳转到给定逻辑路径（自动拼 BASE）。
+ * @param {string} logicalPath 例如 "/games/Lumen"
  */
-export function navigate(path) {
-  const target = normalize(path);
+export function navigate(logicalPath) {
+  const target = withBase(normalize(logicalPath));
   if (target === currentPath()) return;
   history.pushState(null, "", target);
   fire();
 }
 
 /**
- * 替换当前历史记录（不新增条目，例如游戏页内切换游戏 ID）。
- * @param {string} path
+ * 替换当前历史条目（不新增），用于游戏页内切换游戏 ID 等场景。
+ * @param {string} logicalPath
  */
-export function replace(path) {
-  const target = normalize(path);
+export function replace(logicalPath) {
+  const target = withBase(normalize(logicalPath));
   if (target === currentPath()) return;
   history.replaceState(null, "", target);
-  // 不触发 onRoute 回调（仅同步地址栏）
 }
 
 function currentPath() {
   return (location.pathname || "/") + (location.search || "") + (location.hash || "");
 }
 
-function normalize(path) {
-  if (!path) return "/";
-  if (!path.startsWith("/")) path = "/" + path;
-  return path;
+function normalize(p) {
+  if (!p) return "/";
+  if (!p.startsWith("/")) p = "/" + p;
+  return p;
 }
 
 /** @type {((cur: Route, prev: Route|null) => void) | null} */
@@ -100,9 +97,6 @@ function fire() {
   _prev = cur;
 }
 
-/**
- * 注册路由变化监听。回调收到 (Route, prevRoute|null)。
- */
 export function onRoute(handler) {
   _handler = handler;
   window.addEventListener("popstate", fire);

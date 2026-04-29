@@ -6,11 +6,21 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="color-scheme" content="light" />
 
+    <!--
+      ============================================================
+      部署 BASE：切换部署位置时 *只需改这里* 和 404.html 的 <base>
+      ============================================================
+        - 自定义域名（amopixel.com）根部署 → <base href="/" />
+        - GitHub Pages 项目页面 (user.github.io/amopixel/) → <base href="/amopixel/" />
+        - 任何其它子路径同理。href 必须以 "/" 结尾。
+    -->
+    <base href="/" />
+
     <title>amopixel — 独立游戏开发者</title>
     <meta name="description" content="amopixel 是一名独立游戏开发者，这里展示我已发布与开发中的游戏作品。" />
 
-    <link rel="icon" type="image/svg+xml" href="/amopixel/assets/icons/favicon.svg" />
-    <link rel="alternate icon" href="/amopixel/assets/icons/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+    <link rel="alternate icon" href="assets/icons/favicon.svg" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -20,38 +30,42 @@
     <meta property="og:image" content="https://amopixel.com/assets/home/hero.svg" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="preload" as="image" href="/amopixel/assets/home/logo.svg" />
-    <link rel="stylesheet" href="/amopixel/assets/css/main.css" />
+    <link rel="preload" as="image" href="assets/home/logo.svg" />
+    <link rel="stylesheet" href="assets/css/main.css" />
 
     <!--
-      SPA on GitHub Pages：404.html 把不存在的路径暂存到 sessionStorage 后跳到 /，
-      这里在主模块之前同步把 URL 还原回去。必须放 <head> 内最先执行的脚本里。
+      SPA on GitHub Pages：
+      404.html 把不存在的"伪路径"暂存到 sessionStorage 后跳到 BASE 根，
+      这里在主模块之前同步把 URL 还原回去。必须放在最先执行的脚本里。
     -->
     <script>
       (function () {
         try {
           var k = "amopixel:redirect";
-          var p = sessionStorage.getItem(k);
-          if (p) {
-            sessionStorage.removeItem(k);
-            if (p !== location.pathname + location.search + location.hash) {
-              history.replaceState(null, "", p);
-            }
+          var logical = sessionStorage.getItem(k);
+          if (!logical) return;
+          sessionStorage.removeItem(k);
+          var baseEl = document.querySelector("base");
+          var base = (baseEl && baseEl.getAttribute("href")) || "/";
+          if (!base.endsWith("/")) base += "/";
+          var url = base + logical.replace(/^\/+/, "");
+          if (url !== location.pathname + location.search + location.hash) {
+            history.replaceState(null, "", url);
           }
         } catch (e) {}
       })();
     </script>
   </head>
   <body>
-    <!-- 顶栏：Logo + 导航 -->
+    <!-- 顶栏：Logo + 导航。href 全部用相对路径，由 <base> 自动补 BASE 前缀 -->
     <header class="topbar" data-route-aware>
-      <a class="logo" href="/" aria-label="返回首页">
-        <img src="/amopixel/assets/home/logo.svg" alt="amopixel" />
+      <a class="logo" href="." aria-label="返回首页">
+        <img src="assets/home/logo.svg" alt="amopixel" />
       </a>
       <nav class="nav" aria-label="主导航">
-        <a href="/amopixel/" data-nav="home">首页</a>
-        <a href="/amopixel/games" data-nav="games">游戏</a>
-        <a href="/amopixel/about" data-nav="about">了解我</a>
+        <a href="." data-nav="home">首页</a>
+        <a href="games" data-nav="games">游戏</a>
+        <a href="about" data-nav="about">了解我</a>
       </nav>
     </header>
 
@@ -101,7 +115,7 @@
     <!-- ============== 模板：下载页 ============== -->
     <template id="tpl-download">
       <section class="page page-download">
-        <a class="back-btn" data-back href="/games" aria-label="返回">
+        <a class="back-btn" data-back href="games" aria-label="返回">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>返回</span>
         </a>
@@ -128,10 +142,10 @@
       <section class="page page-error">
         <h1 data-title>出错了</h1>
         <p data-msg></p>
-        <a class="btn btn-primary" href="/">返回首页</a>
+        <a class="btn btn-primary" href=".">返回首页</a>
       </section>
     </template>
 
-    <script type="module" src="/assets/js/app.js"></script>
+    <script type="module" src="assets/js/app.js"></script>
   </body>
 </html>

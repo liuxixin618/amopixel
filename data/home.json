@@ -1,7 +1,7 @@
 {
   "hero": {
     "type": "image",
-    "src": "/amopixel/assets/home/hero.svg"
+    "src": "assets/home/hero.svg"
   },
   "alt": "amopixel — 独立游戏开发者主视觉"
 }

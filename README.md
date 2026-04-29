@@ -13,26 +13,29 @@
 
 ```
 amopixel/
-├── index.html                # SPA 单入口，包含 4 个虚拟页面
-├── CNAME                     # GitHub Pages 自定义域名
-├── 404.html                  # 兼容刷新刷出来的子路径
+├── index.html                # SPA 单入口（含 <base href> 配置部署 BASE）
+├── 404.html                  # SPA 子路径回退（同样含 <base href>）
+├── CNAME                     # 自定义域名（仅根部署需要，子路径部署请删除）
 ├── build.py                  # 扫描 Games/ 自动生成 games.json
+├── dev.py                    # 本地预览服务器（带 SPA fallback / BASE 仿真）
+├── verify.py                 # 端到端资源/配置/模板一致性自检
 │
 ├── assets/
 │   ├── css/main.css          # 设计系统 + 所有页面样式
 │   ├── js/                   # 应用代码（router + 各页面控制器）
 │   │   ├── app.js
-│   │   ├── router.js
-│   │   ├── pages/
-│   │   │   ├── home.js
-│   │   │   ├── games.js
-│   │   │   ├── download.js
-│   │   │   └── about.js
-│   │   └── utils.js
+│   │   ├── router.js         # History API 路由（无 #）
+│   │   ├── base.js           # BASE 路径管理（withBase / stripBase）
+│   │   ├── utils.js
+│   │   └── pages/
+│   │       ├── home.js
+│   │       ├── games.js
+│   │       ├── download.js
+│   │       └── about.js
 │   ├── icons/favicon.svg
 │   └── home/                 # 首页主视觉资源
-│       ├── logo.png          # 站点 Logo（横向长图也支持）
-│       └── hero.jpg          # 或 hero.mp4
+│       ├── logo.svg          # 站点 Logo（替换为 png/jpg 均可，横向长图也支持）
+│       └── hero.svg          # 或 hero.jpg / hero.mp4
 │
 ├── Games/                    # 游戏内容目录（核心维护区）
 │   ├── ExampleGameA/
@@ -114,12 +117,43 @@ python verify.py
 
 ## 4. 部署到 GitHub Pages
 
+### 方式 A：自定义域名根部署（推荐，amopixel.com）
+
+URL 形如 `https://amopixel.com/games`。
+
 1. 在 GitHub 创建仓库，将本目录推送上去
 2. 仓库 Settings → Pages → Source 选择 **GitHub Actions**
 3. 将自定义域名 `amopixel.com` 在 DNS 提供商处指向 GitHub Pages
 4. 推送代码后，`.github/workflows/deploy.yml` 会自动跑 `build.py` 并部署
 
 `CNAME` 文件已包含 `amopixel.com`，无需手动在 Pages 设置里再填一遍。
+
+`index.html` 与 `404.html` 中的 `<base href="/" />` 保持默认即可。
+
+### 方式 B：GitHub Pages 项目页面（带子路径）
+
+URL 形如 `https://用户名.github.io/amopixel/games`。
+
+只需要改 **2 个地方**，整个项目就会自动适配子路径——其他代码全部基于
+`<base href>` 自动解析，无须再动：
+
+1. **`index.html`**：`<base href="/" />` → `<base href="/amopixel/" />`
+2. **`404.html`**：`<base href="/" />` → `<base href="/amopixel/" />`
+
+如果你要部署到不同名字的仓库，把 `/amopixel/` 换成 `/<repo-name>/`（开头与
+结尾都要保留 `/`）即可。
+
+> 同时记得：使用方式 B 时**删除 `CNAME` 文件**（CNAME 是给自定义域名用的，
+> 子路径部署不需要）。
+
+### 本地仿真子路径部署
+
+```bash
+python dev.py --base /amopixel/
+# 浏览器打开 http://localhost:8080/amopixel/
+```
+
+`dev.py` 会模拟 GitHub Pages 的子路径行为，让本地体验和线上一致。
 
 ## 5. 配置文件说明
 

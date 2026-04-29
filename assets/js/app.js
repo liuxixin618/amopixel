@@ -3,6 +3,7 @@
  */
 
 import { onRoute, navigate, parseLocation } from "./router.js";
+import { BASE, stripBase } from "./base.js";
 import { renderHome } from "./pages/home.js";
 import { renderGames } from "./pages/games.js";
 import { renderDownload } from "./pages/download.js";
@@ -37,33 +38,39 @@ syncTopbarShadow();
 /* ---------- 客户端路由：拦截内部 <a> 点击 ---------- */
 
 document.addEventListener("click", (e) => {
-  // 仅左键，无修饰键
   if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
   if (e.defaultPrevented) return;
 
   const a = e.target.closest("a");
   if (!a) return;
 
-  // 跳过外链 / 新窗口 / 下载链接
+  // 跳过外链 / 新窗口 / 下载链接 / hash 锚点
   if (a.target && a.target !== "" && a.target !== "_self") return;
   if (a.hasAttribute("download")) return;
 
-  const href = a.getAttribute("href");
-  if (!href) return;
-  if (
-    href.startsWith("http://") ||
-    href.startsWith("https://") ||
-    href.startsWith("//") ||
-    href.startsWith("mailto:") ||
-    href.startsWith("tel:")
-  )
+  const rawHref = a.getAttribute("href");
+  if (!rawHref) return;
+  if (rawHref.startsWith("#") || rawHref.startsWith("mailto:") || rawHref.startsWith("tel:")) {
     return;
+  }
 
-  // 仅处理站内绝对路径（以 / 开头）
-  if (!href.startsWith("/")) return;
+  // 用浏览器解析后的 URL 做判断（已应用 <base href> 与相对路径解析）
+  let url;
+  try {
+    url = new URL(a.href);
+  } catch {
+    return;
+  }
+  if (url.origin !== location.origin) return;
+
+  // 必须落在 BASE 范围内才接管路由
+  if (BASE !== "/" && !url.pathname.startsWith(BASE) && url.pathname !== BASE.slice(0, -1)) {
+    return;
+  }
 
   e.preventDefault();
-  navigate(href);
+  const logical = stripBase(url.pathname) + url.search + url.hash;
+  navigate(logical);
 });
 
 /* ---------- 路由 → 页面渲染分发 ---------- */
@@ -72,7 +79,6 @@ async function go(route, prev) {
   activeRoute = route;
   syncTopbar(route);
 
-  // 离场动画
   const oldPage = view.firstElementChild;
   if (oldPage && prev) {
     oldPage.classList.add("is-leaving");
@@ -101,7 +107,7 @@ async function go(route, prev) {
         view.innerHTML = `<section class="page page-error">
           <h1>页面不存在</h1>
           <p>找不到对应的页面。</p>
-          <a class="btn btn-primary" href="/">返回首页</a>
+          <a class="btn btn-primary" href=".">返回首页</a>
         </section>`;
     }
   } catch (err) {
@@ -109,11 +115,10 @@ async function go(route, prev) {
     view.innerHTML = `<section class="page page-error">
       <h1>渲染出错</h1>
       <p>${err && err.message ? err.message : "未知错误"}</p>
-      <a class="btn btn-primary" href="/">返回首页</a>
+      <a class="btn btn-primary" href=".">返回首页</a>
     </section>`;
   }
 
-  // 顶部回滚（除非是同一页只换游戏 ID）
   if (!prev || prev.name !== route.name) {
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
   }
@@ -121,4 +126,4 @@ async function go(route, prev) {
 
 onRoute(go);
 
-window.__amopixel = { parseLocation };
+window.__amopixel = { parseLocation, BASE };

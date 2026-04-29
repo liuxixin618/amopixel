@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
 """
-本地预览服务器（带 SPA fallback）。
+本地预览服务器（带 SPA fallback + 可选 BASE 前缀）。
 
 Python 内置的 ``python -m http.server`` 不会使用 ``404.html``，
 直接刷新 /games 这种伪路径会返回 404 错误页。
 本脚本对所有不是真实文件的请求统一回退到 ``index.html``，
 让本地体验与 GitHub Pages 完全一致。
 
-用法：
-    python dev.py            # 默认 8080 端口
-    python dev.py 9000       # 指定端口
+支持模拟「GitHub Pages 项目页面」部署：
+
+    python dev.py                       # http://localhost:8080/
+    python dev.py --base /amopixel/     # http://localhost:8080/amopixel/
+    python dev.py --port 9000
+
+注意：使用 --base 时还需要把 index.html 与 404.html 中的 <base href> 改成相同值。
 """
 
 from __future__ import annotations
 
+import argparse
 import http.server
 import os
 import socket
@@ -23,77 +28,98 @@ from functools import partial
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-INDEX = ROOT / "index.html"
 
-# 这些前缀下的文件都是真实静态资源，找不到就该 404
-STATIC_PREFIXES = ("/assets/", "/data/", "/Games/")
-
-# 这些前缀属于 SPA 路由，必须无条件回退到 index.html
-# 注意 Windows 文件系统大小写不敏感：os.path.isdir("/games") 在
-# 存在 /Games/ 时会返回 True，所以必须显式判定路由前缀，
-# 不能依赖磁盘探测。
-ROUTE_PREFIXES = ("/games", "/download", "/about")
+STATIC_PREFIXES = ("assets/", "data/", "Games/")  # 不含前导 /
+SPECIAL_FILES = {"favicon.ico", "robots.txt", "sitemap.xml", "CNAME"}
 
 
-class SpaHandler(http.server.SimpleHTTPRequestHandler):
-    extensions_map = {
-        **http.server.SimpleHTTPRequestHandler.extensions_map,
-        ".js": "application/javascript",
-        ".mjs": "application/javascript",
-        ".json": "application/json",
-        ".svg": "image/svg+xml",
-        ".webp": "image/webp",
-        ".avif": "image/avif",
-        ".woff2": "font/woff2",
-        "": "application/octet-stream",
-    }
+def make_handler(base: str):
+    """
+    base 形如 "/" 或 "/amopixel/"。
+    所有 URL 必须落在 base 前缀下，否则返回 404 / 重定向。
+    base 内部的请求按真实文件 → 不存在则回退 index.html。
+    """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(ROOT), **kwargs)
+    base_prefix = base if base.endswith("/") else base + "/"
+    base_no_slash = base_prefix[:-1]  # "" 或 "/amopixel"
 
-    def end_headers(self):
-        # 开发期禁缓存
-        self.send_header("Cache-Control", "no-store, must-revalidate")
-        super().end_headers()
+    class SpaHandler(http.server.SimpleHTTPRequestHandler):
+        extensions_map = {
+            **http.server.SimpleHTTPRequestHandler.extensions_map,
+            ".js": "application/javascript",
+            ".mjs": "application/javascript",
+            ".json": "application/json",
+            ".svg": "image/svg+xml",
+            ".webp": "image/webp",
+            ".avif": "image/avif",
+            ".woff2": "font/woff2",
+            "": "application/octet-stream",
+        }
 
-    def log_message(self, fmt, *args):
-        sys.stderr.write(
-            "[%s] %s\n" % (self.log_date_time_string(), fmt % args)
-        )
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory=str(ROOT), **kwargs)
 
-    def send_head(self):
-        path = self.path.split("?", 1)[0].split("#", 1)[0]
+        def end_headers(self):
+            self.send_header("Cache-Control", "no-store, must-revalidate")
+            super().end_headers()
 
-        # 1) SPA 路由前缀：无条件回退到 index.html（避免 Windows
-        #    大小写不敏感把 /games 当成磁盘上的 /Games/ 目录）
-        for prefix in ROUTE_PREFIXES:
-            if path == prefix or path.startswith(prefix + "/"):
+        def log_message(self, fmt, *args):
+            sys.stderr.write(
+                "[%s] %s\n" % (self.log_date_time_string(), fmt % args)
+            )
+
+        def send_head(self):
+            full_path = self.path.split("?", 1)[0].split("#", 1)[0]
+
+            # ---- BASE 前缀检查 ----
+            if base_prefix != "/":
+                if full_path == base_no_slash:
+                    self.send_response(301)
+                    self.send_header("Location", base_prefix)
+                    self.end_headers()
+                    return None
+                if not full_path.startswith(base_prefix):
+                    self.send_error(404, f"Not in BASE ({base_prefix})")
+                    return None
+                inner = full_path[len(base_prefix):]
+            else:
+                inner = full_path.lstrip("/")
+
+            # 根路径 → index.html
+            if inner == "" or inner == "index.html":
                 self.path = "/index.html"
                 return super().send_head()
 
-        # 2) 静态资源前缀：必须真实存在，否则 404
-        if any(path.startswith(p) for p in STATIC_PREFIXES):
-            try:
-                disk = self.translate_path(path)
-            except Exception:
-                disk = ""
-            if not (disk and os.path.isfile(disk)):
+            first_seg = inner.split("/", 1)[0]
+            is_static = (
+                any(inner.startswith(p) for p in STATIC_PREFIXES)
+                or first_seg in SPECIAL_FILES
+                or first_seg == "404.html"
+            )
+
+            if is_static:
+                # 真实静态资源：必须存在，否则 404
+                # （case-sensitive 路径检查，避免 Windows 把 /games 误匹配到 Games/）
+                disk = (ROOT / inner).resolve()
+                try:
+                    disk.relative_to(ROOT)
+                except ValueError:
+                    self.send_error(403, "Forbidden")
+                    return None
+                if disk.is_file() or disk.is_dir():
+                    self.path = "/" + inner
+                    return super().send_head()
                 self.send_error(404, "File not found")
                 return None
+
+            # 其它任何路径都是 SPA 路由，回退到 index.html
+            self.path = "/index.html"
             return super().send_head()
 
-        # 3) 其他路径：尝试真实文件，否则也 fallback 到 index.html
-        try:
-            disk = self.translate_path(path)
-        except Exception:
-            disk = ""
-        if not (disk and (os.path.isfile(disk) or os.path.isdir(disk))):
-            self.path = "/index.html"
-        return super().send_head()
+    return SpaHandler
 
 
 def _pick_port(preferred: int) -> int:
-    """端口被占就 +1 直到可用，避免上次 dev 没退干净导致启动失败。"""
     port = preferred
     for _ in range(20):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -106,22 +132,41 @@ def _pick_port(preferred: int) -> int:
 
 
 def main() -> int:
-    requested = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
-    port = _pick_port(requested)
-    if port != requested:
-        print(f"[!] 端口 {requested} 被占用，改用 {port}")
+    parser = argparse.ArgumentParser(
+        description="amopixel 本地预览服务器（带 SPA fallback）"
+    )
+    parser.add_argument("--port", type=int, default=8080, help="默认 8080")
+    parser.add_argument(
+        "--base",
+        default="/",
+        help='BASE 前缀，默认 "/"。模拟 GitHub Pages 项目页面用 "/amopixel/"',
+    )
+    # 兼容老用法 dev.py 8080
+    parser.add_argument("legacy_port", nargs="?", type=int, help=argparse.SUPPRESS)
+    args = parser.parse_args()
 
-    handler = partial(SpaHandler)
+    port = _pick_port(args.legacy_port or args.port)
+    if port != (args.legacy_port or args.port):
+        print(f"[!] 端口被占用，改用 {port}")
+
+    base = args.base
+    if not base.startswith("/"):
+        base = "/" + base
+    if not base.endswith("/"):
+        base += "/"
+
+    handler = make_handler(base)
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", port), handler) as httpd:
         print()
         print(f"  amopixel dev server")
-        print(f"  → http://localhost:{port}/")
-        print(f"  → http://localhost:{port}/games")
-        print(f"  → http://localhost:{port}/about")
+        print(f"  → http://localhost:{port}{base}")
+        print(f"  → http://localhost:{port}{base}games")
+        print(f"  → http://localhost:{port}{base}about")
         print()
         print(f"  serving:   {ROOT}")
-        print(f"  fallback:  any non-asset URL → index.html (SPA)")
+        print(f"  base:      {base}")
+        print(f"  fallback:  any non-asset URL inside base → index.html (SPA)")
         print(f"  Ctrl+C 退出")
         print()
         try:
