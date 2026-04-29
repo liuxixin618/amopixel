@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>amopixel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #4a514c;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        font-size: 14px;
+      }
+    </style>
+    <!--
+      GitHub Pages SPA 重定向：
+      把当前真实路径暂存到 sessionStorage 后跳到 /，
+      由 index.html 头部的脚本读取并 history.replaceState 还原 URL。
+      此页面对用户几乎不可见（304ms 内即跳转）。
+    -->
+    <script>
+      (function () {
+        try {
+          var p = location.pathname + location.search + location.hash;
+          if (p && p !== "/") {
+            sessionStorage.setItem("amopixel:redirect", p);
+          }
+        } catch (e) {}
+        location.replace("/");
+      })();
+    </script>
+  </head>
+  <body>
+    <p>跳转中… 如未自动跳转，请 <a href="/">点此返回首页</a>。</p>
+  </body>
+</html>

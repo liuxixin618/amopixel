@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b6ea8"/>
+      <stop offset="100%" stop-color="#1d3457"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <g fill="#fff" opacity="0.85">
+    <circle cx="80"  cy="100" r="3"/>
+    <circle cx="180" cy="60"  r="2"/>
+    <circle cx="320" cy="120" r="3"/>
+    <circle cx="440" cy="80"  r="2"/>
+    <circle cx="100" cy="240" r="2"/>
+    <circle cx="430" cy="300" r="3"/>
+  </g>
+  <g transform="translate(120 200)">
+    <rect x="0" y="60" width="200" height="120" rx="20" fill="#fde6c4"/>
+    <rect x="200" y="80" width="60" height="80" rx="14" fill="#f5b25c"/>
+    <circle cx="60"  cy="200" r="22" fill="#1a1d1b"/>
+    <circle cx="60"  cy="200" r="10" fill="#9adca5"/>
+    <circle cx="200" cy="200" r="22" fill="#1a1d1b"/>
+    <circle cx="200" cy="200" r="10" fill="#9adca5"/>
+    <text x="100" y="135" font-family="system-ui" font-size="36" font-weight="800" fill="#1a1d1b" text-anchor="middle">SE</text>
+  </g>
+</svg>

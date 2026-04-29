@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#15233f"/>
+      <stop offset="60%" stop-color="#3a5f93"/>
+      <stop offset="100%" stop-color="#7fa9d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <g fill="#fff" opacity="0.9">
+    <circle cx="120"  cy="140" r="2"/>
+    <circle cx="320"  cy="80"  r="3"/>
+    <circle cx="540"  cy="180" r="2"/>
+    <circle cx="900"  cy="100" r="3"/>
+    <circle cx="1180" cy="160" r="2"/>
+    <circle cx="1450" cy="80"  r="3"/>
+    <circle cx="780"  cy="220" r="2"/>
+  </g>
+  <g fill="#1a1d1b">
+    <rect x="0" y="700" width="1600" height="200"/>
+    <polygon points="0,700 200,560 400,700"/>
+    <polygon points="800,700 1080,500 1360,700"/>
+  </g>
+  <g transform="translate(540 460)">
+    <rect x="0" y="60" width="320" height="160" rx="24" fill="#fde6c4"/>
+    <rect x="320" y="90" width="100" height="120" rx="20" fill="#f5b25c"/>
+    <circle cx="80"  cy="240" r="34" fill="#1a1d1b"/>
+    <circle cx="80"  cy="240" r="14" fill="#9adca5"/>
+    <circle cx="320" cy="240" r="34" fill="#1a1d1b"/>
+    <circle cx="320" cy="240" r="14" fill="#9adca5"/>
+  </g>
+  <g font-family="-apple-system, system-ui, sans-serif" fill="#fff" text-anchor="middle">
+    <text x="800" y="380" font-size="78" font-weight="700" letter-spacing="2">Starpost Express</text>
+  </g>
+</svg>

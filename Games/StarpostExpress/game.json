@@ -1,0 +1,9 @@
+{
+  "title": "Starpost Express",
+  "description": "驾驶你的小货车，把信件和包裹送遍 50 个奇怪又温柔的星球。\n\n每一次出发，都是一段新的故事。",
+  "order": 30,
+  "downloads": [
+    { "label": "Steam 抢先体验", "url": "https://store.steampowered.com/" },
+    { "label": "itch.io Demo", "url": "https://itch.io/" }
+  ]
+}

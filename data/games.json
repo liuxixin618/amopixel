@@ -1,0 +1,82 @@
+{
+  "games": [
+    {
+      "id": "PixelGarden",
+      "dir": "PixelGarden",
+      "title": "Pixel Garden",
+      "description": "在像素世界里经营一座小花园。\n\n种下种子，浇水，等到第二天发芽——一款不需要赢的、慢节奏放松小品。",
+      "icon": "/Games/PixelGarden/icon.svg",
+      "banners": [
+        "/Games/PixelGarden/Banners/01.svg",
+        "/Games/PixelGarden/Banners/02.svg",
+        "/Games/PixelGarden/Banners/03.svg"
+      ],
+      "downloads": [
+        {
+          "label": "Steam 商店",
+          "url": "https://store.steampowered.com/"
+        },
+        {
+          "label": "itch.io 主页",
+          "url": "https://itch.io/"
+        },
+        {
+          "label": "Android APK",
+          "url": "https://example.com/pixel-garden.apk"
+        },
+        {
+          "label": "TestFlight (iOS)",
+          "url": "https://testflight.apple.com/"
+        }
+      ],
+      "order": 10
+    },
+    {
+      "id": "Lumen",
+      "dir": "Lumen",
+      "title": "Lumen",
+      "description": "用一束光，画出整个世界的形状。\n\n一款关于光线折射、镜面反射与几何谜题的极简解谜游戏。",
+      "icon": "/Games/Lumen/icon.svg",
+      "banners": [
+        "/Games/Lumen/Banners/01.svg",
+        "/Games/Lumen/Banners/02.svg"
+      ],
+      "downloads": [
+        {
+          "label": "Steam",
+          "url": "https://store.steampowered.com/"
+        },
+        {
+          "label": "Nintendo eShop",
+          "url": "https://www.nintendo.com/"
+        },
+        {
+          "label": "App Store",
+          "url": "https://apps.apple.com/"
+        }
+      ],
+      "order": 20
+    },
+    {
+      "id": "StarpostExpress",
+      "dir": "StarpostExpress",
+      "title": "Starpost Express",
+      "description": "驾驶你的小货车，把信件和包裹送遍 50 个奇怪又温柔的星球。\n\n每一次出发，都是一段新的故事。",
+      "icon": "/Games/StarpostExpress/icon.svg",
+      "banners": [
+        "/Games/StarpostExpress/Banners/01.svg"
+      ],
+      "downloads": [
+        {
+          "label": "Steam 抢先体验",
+          "url": "https://store.steampowered.com/"
+        },
+        {
+          "label": "itch.io Demo",
+          "url": "https://itch.io/"
+        }
+      ],
+      "order": 30
+    }
+  ]
+}

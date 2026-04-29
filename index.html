@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light" />
+
+    <title>amopixel — 独立游戏开发者</title>
+    <meta name="description" content="amopixel 是一名独立游戏开发者，这里展示我已发布与开发中的游戏作品。" />
+
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+    <link rel="alternate icon" href="assets/icons/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="amopixel — 独立游戏开发者" />
+    <meta property="og:description" content="独立游戏开发者 amopixel 的个人作品集。" />
+    <meta property="og:url" content="https://amopixel.com/" />
+    <meta property="og:image" content="https://amopixel.com/assets/home/hero.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preload" as="image" href="/assets/home/logo.svg" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+
+    <!--
+      SPA on GitHub Pages：404.html 把不存在的路径暂存到 sessionStorage 后跳到 /，
+      这里在主模块之前同步把 URL 还原回去。必须放 <head> 内最先执行的脚本里。
+    -->
+    <script>
+      (function () {
+        try {
+          var k = "amopixel:redirect";
+          var p = sessionStorage.getItem(k);
+          if (p) {
+            sessionStorage.removeItem(k);
+            if (p !== location.pathname + location.search + location.hash) {
+              history.replaceState(null, "", p);
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- 顶栏：Logo + 导航 -->
+    <header class="topbar" data-route-aware>
+      <a class="logo" href="/" aria-label="返回首页">
+        <img src="/assets/home/logo.svg" alt="amopixel" />
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="/" data-nav="home">首页</a>
+        <a href="/games" data-nav="games">游戏</a>
+        <a href="/about" data-nav="about">了解我</a>
+      </nav>
+    </header>
+
+    <!-- 路由出口 -->
+    <main id="view" class="view" aria-live="polite"></main>
+
+    <!-- 大图查看器（Banner 点击放大） -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true" hidden>
+      <button class="lightbox-close" type="button" aria-label="关闭">&times;</button>
+      <img class="lightbox-img" alt="" />
+    </div>
+
+    <!-- ============== 模板：首页 ============== -->
+    <template id="tpl-home">
+      <section class="page page-home">
+        <div class="hero" data-hero></div>
+      </section>
+    </template>
+
+    <!-- ============== 模板：游戏页 ============== -->
+    <template id="tpl-games">
+      <section class="page page-games">
+        <div class="games-selector">
+          <button class="selector-arrow selector-arrow--left" type="button" aria-label="上一组" data-arrow="left">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="selector-track" data-selector-track></div>
+          <button class="selector-arrow selector-arrow--right" type="button" aria-label="下一组" data-arrow="right">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <div class="game-detail" data-detail>
+          <div class="game-banner" data-banner>
+            <div class="banner-stage" data-banner-stage></div>
+            <div class="banner-dots" data-banner-dots></div>
+          </div>
+          <div class="game-info" data-info>
+            <h1 class="game-title" data-title></h1>
+            <p class="game-desc" data-desc></p>
+            <a class="btn btn-primary" data-download href="#">下载</a>
+          </div>
+        </div>
+      </section>
+    </template>
+
+    <!-- ============== 模板：下载页 ============== -->
+    <template id="tpl-download">
+      <section class="page page-download">
+        <a class="back-btn" data-back href="/games" aria-label="返回">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>返回</span>
+        </a>
+        <div class="download-card">
+          <img class="download-icon" data-icon alt="" />
+          <h1 class="download-title" data-title></h1>
+          <div class="download-links" data-links></div>
+        </div>
+      </section>
+    </template>
+
+    <!-- ============== 模板：了解我 ============== -->
+    <template id="tpl-about">
+      <section class="page page-about">
+        <article class="about-article">
+          <h1 class="about-title" data-title></h1>
+          <div class="about-body" data-body></div>
+        </article>
+      </section>
+    </template>
+
+    <!-- ============== 模板：错误页 ============== -->
+    <template id="tpl-error">
+      <section class="page page-error">
+        <h1 data-title>出错了</h1>
+        <p data-msg></p>
+        <a class="btn btn-primary" href="/">返回首页</a>
+      </section>
+    </template>
+
+    <script type="module" src="/assets/js/app.js"></script>
+  </body>
+</html>

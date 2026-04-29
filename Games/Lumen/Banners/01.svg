@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d1226"/>
+      <stop offset="100%" stop-color="#2c1a40"/>
+    </linearGradient>
+    <radialGradient id="lamp" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff7c2" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#fff7c2" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <ellipse cx="800" cy="450" rx="700" ry="450" fill="url(#lamp)"/>
+  <g fill="#ffd86b">
+    <circle cx="800" cy="430" r="30"/>
+  </g>
+  <g font-family="-apple-system, system-ui, sans-serif" fill="#fff" text-anchor="middle">
+    <text x="800" y="640" font-size="96" font-weight="700" letter-spacing="4">LUMEN</text>
+    <text x="800" y="700" font-size="22" opacity="0.7">a puzzle of light &amp; shadow</text>
+  </g>
+</svg>

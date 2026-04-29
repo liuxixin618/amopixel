@@ -1,0 +1,10 @@
+{
+  "title": "Lumen",
+  "description": "用一束光，画出整个世界的形状。\n\n一款关于光线折射、镜面反射与几何谜题的极简解谜游戏。",
+  "order": 20,
+  "downloads": [
+    { "label": "Steam", "url": "https://store.steampowered.com/" },
+    { "label": "Nintendo eShop", "url": "https://www.nintendo.com/" },
+    { "label": "App Store", "url": "https://apps.apple.com/" }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Pixel Garden",
+  "description": "在像素世界里经营一座小花园。\n\n种下种子，浇水，等到第二天发芽——一款不需要赢的、慢节奏放松小品。",
+  "order": 10,
+  "downloads": [
+    { "label": "Steam 商店", "url": "https://store.steampowered.com/" },
+    { "label": "itch.io 主页", "url": "https://itch.io/" },
+    { "label": "Android APK", "url": "https://example.com/pixel-garden.apk" },
+    { "label": "TestFlight (iOS)", "url": "https://testflight.apple.com/" }
+  ]
+}
